@@ -1,5 +1,3 @@
-
-
 #include "Arduino.h"
 #include "EventManager.h"
 #include "myPushButton.h"
@@ -56,7 +54,7 @@ void myPushButton::serviceEvents() {
             _state = ST_WAITING_FOR_RELEASE;
             break;
         case ST_WAITING_FOR_RELEASE:
-            if (!isPressed()) {
+            if (!buttonPressed) {
                 _state = EV_RELEASED;
             }
             break;
@@ -82,6 +80,7 @@ void myPushButton::init2()
 
 bool myPushButton::isPressed() 
 {
+    init2();
     return digitalRead(_pin) != _lowState;
 }
 
