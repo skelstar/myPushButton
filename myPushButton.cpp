@@ -5,8 +5,6 @@
 EventManager evM;
 #define EVENT_CODE EventManager::kEventUser9
 
-#define DEBOUNCE_DELAY_MS   10
-
 myPushButton::myPushButton(uint8_t pin, bool pullUp, uint16_t heldDurationMs, uint8_t lowState, EventListener listenerCallback) {
 
     _pin = pin;
@@ -28,42 +26,37 @@ bool myPushButton::singleButtonPush() {
 void myPushButton::serviceEvents() {
     bool buttonPressed = isPressed();
 
-    switch (_state) {
+    if (_state == ST_NOT_HELD) {
+        if (buttonPressed) {
+            _state = EV_BUTTON_PRESSED;
+        }
 
-        case ST_NOT_HELD:
-            if (buttonPressed) {
-                _state = EV_BUTTON_PRESSED;
-            }
-            break;
-        case EV_BUTTON_PRESSED:
-            _heldBeginMillis = millis();
-            evM.queueEvent(EVENT_CODE, _state);
-            delay(DEBOUNCE_DELAY_MS);
-            _state = ST_WAIT_FOR_HELD_TIME;
-            break;
-        case ST_WAIT_FOR_HELD_TIME:
-            if (buttonPressed && isHeldForLongEnough()) {
-                _state = EV_HELD_FOR_LONG_ENOUGH;
-            } else if (!buttonPressed) {
-                _state = EV_RELEASED;
-            }
-            break;
-        case EV_HELD_FOR_LONG_ENOUGH:
-            evM.queueEvent(EVENT_CODE, _state);
-            delay(DEBOUNCE_DELAY_MS);
-            _state = ST_WAITING_FOR_RELEASE;
-            break;
-        case ST_WAITING_FOR_RELEASE:
-            if (!buttonPressed) {
-                _state = EV_RELEASED;
-            }
-            break;
-        case EV_RELEASED:
-            evM.queueEvent(EVENT_CODE, _state);
-            delay(DEBOUNCE_DELAY_MS);
-            _state = ST_NOT_HELD;
-            break;
-    }    
+    } else if (_state == EV_BUTTON_PRESSED ) {
+        _heldBeginMillis = millis();
+        evM.queueEvent(EVENT_CODE, _state);
+        _state = ST_WAIT_FOR_HELD_TIME;
+
+    } else if (_state == ST_WAIT_FOR_HELD_TIME) {
+        if (buttonPressed && isHeldForLongEnough()) {
+            _state = EV_HELD_FOR_LONG_ENOUGH;
+        } else if (!buttonPressed) {
+            _state = EV_RELEASED;
+        }
+
+    } else if (_state == EV_HELD_FOR_LONG_ENOUGH) {
+        evM.queueEvent(EVENT_CODE, _state);
+        _state = ST_WAITING_FOR_RELEASE;
+
+    } else if (_state == ST_WAITING_FOR_RELEASE) {
+        if (!buttonPressed) {
+            _state = EV_RELEASED;
+        }
+
+    } else if (_state == EV_RELEASED) {
+        evM.queueEvent(EVENT_CODE, _state);
+        _state = ST_NOT_HELD;
+    }
+
     evM.processEvent();
 }
 
