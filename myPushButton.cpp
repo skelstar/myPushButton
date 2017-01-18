@@ -5,6 +5,14 @@
 EventManager evM;
 #define EVENT_CODE EventManager::kEventUser9
 
+#define DOUBLETAP_MS_HIGH   1000
+#define DOUBLETAP_MS_LOW    200
+
+long lastButtonReleaseTime = 0;
+
+// declarations
+bool buttonReleaseInDoubletapWindow();
+
 myPushButton::myPushButton(uint8_t pin, bool pullUp, uint16_t heldDurationMs, uint8_t lowState, EventListener listenerCallback) {
 
     _pin = pin;
@@ -46,15 +54,24 @@ void myPushButton::serviceEvents() {
     } else if (_state == EV_HELD_FOR_LONG_ENOUGH) {
         evM.queueEvent(EVENT_CODE, _state);
         _state = ST_WAITING_FOR_RELEASE;
+        lastButtonReleaseTime = 0;
 
     } else if (_state == ST_WAITING_FOR_RELEASE) {
         if (!buttonPressed) {
             _state = EV_RELEASED;
         }
 
-    } else if (_state == EV_RELEASED) {
+    } 
+
+    if (_state == EV_RELEASED) {
         evM.queueEvent(EVENT_CODE, _state);
-        _state = ST_NOT_HELD;
+        if (buttonReleaseInDoubletapWindow()) {
+            evM.queueEvent(EVENT_CODE, EV_DOUBLETAP);
+        	lastButtonReleaseTime = 0;
+        } else {
+            lastButtonReleaseTime = millis();
+            _state = ST_NOT_HELD;
+        }
     }
 
     evM.processEvent();
@@ -79,5 +96,10 @@ bool myPushButton::isPressed()
 
 bool myPushButton::isHeldForLongEnough() 
 {
-    return uint16_t(_heldBeginMillis + _heldDurationMillis) <= millis();
+    return long(_heldBeginMillis + _heldDurationMillis) <= millis();
+}
+
+bool buttonReleaseInDoubletapWindow() {
+    long gap = millis() - lastButtonReleaseTime;
+    return gap > DOUBLETAP_MS_LOW && gap < DOUBLETAP_MS_HIGH;
 }

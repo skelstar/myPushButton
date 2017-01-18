@@ -13,7 +13,8 @@ class myPushButton
             ST_WAIT_FOR_HELD_TIME,
             EV_HELD_FOR_LONG_ENOUGH,
             ST_WAITING_FOR_RELEASE,
-            EV_RELEASED
+            EV_RELEASED,
+            EV_DOUBLETAP
         };
 
         typedef void ( *EventListener )( int eventCode, int eventParam );
@@ -29,8 +30,8 @@ class myPushButton
         bool _pullUp;
         uint8_t _state;
         uint8_t _lowState;
-        uint16_t _heldDurationMillis;
-        uint16_t _heldBeginMillis;
+        long _heldDurationMillis;
+        long _heldBeginMillis;
 
         bool isHeldForLongEnough();
         void init2();
