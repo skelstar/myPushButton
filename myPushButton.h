@@ -13,7 +13,9 @@ class myPushButton
             ST_WAIT_FOR_HELD_TIME,
             EV_HELD_FOR_LONG_ENOUGH,
             ST_WAITING_FOR_RELEASE,
+            ST_WAITING_FOR_RELEASE_FROM_HELD_TIME,
             EV_RELEASED,
+            EV_RELEASED_FROM_HELD_TIME,
             EV_DOUBLETAP
         };
 

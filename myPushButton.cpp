@@ -53,14 +53,18 @@ void myPushButton::serviceEvents() {
 
     } else if (_state == EV_HELD_FOR_LONG_ENOUGH) {
         evM.queueEvent(EVENT_CODE, _state);
-        _state = ST_WAITING_FOR_RELEASE;
+        _state = ST_WAITING_FOR_RELEASE_FROM_HELD_TIME;
         lastButtonReleaseTime = 0;
 
     } else if (_state == ST_WAITING_FOR_RELEASE) {
         if (!buttonPressed) {
             _state = EV_RELEASED;
         }
-
+    
+    } else if (_state == ST_WAITING_FOR_RELEASE_FROM_HELD_TIME) {
+        if (!buttonPressed) {
+            _state = EV_RELEASED_FROM_HELD_TIME;
+        }
     } 
 
     if (_state == EV_RELEASED) {
@@ -72,6 +76,10 @@ void myPushButton::serviceEvents() {
             lastButtonReleaseTime = millis();
             _state = ST_NOT_HELD;
         }
+    } else if (_state == EV_RELEASED_FROM_HELD_TIME) {
+        evM.queueEvent(EVENT_CODE, _state);
+        lastButtonReleaseTime = millis();
+        _state = ST_NOT_HELD;
     }
 
     evM.processEvent();
