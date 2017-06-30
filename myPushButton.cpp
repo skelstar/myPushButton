@@ -22,13 +22,11 @@ myPushButton::myPushButton(uint8_t pin, bool pullUp, uint16_t heldDurationMs, ui
 
     _state = ST_NOT_HELD;
 
-    evM.addListener(EVENT_CODE, listenerCallback);
+    if (listenerCallback != NULL) {
+        evM.addListener(EVENT_CODE, listenerCallback);
+    }
 
     init2();
-}
-
-bool myPushButton::singleButtonPush() {
-    return true;    // _state == HELD_FOR_LESS_THAN_HELD_TIME
 }
 
 void myPushButton::serviceEvents() {
@@ -85,8 +83,7 @@ void myPushButton::serviceEvents() {
     evM.processEvent();
 }
 
-void myPushButton::init2() 
-{
+void myPushButton::init2() {
     if (_pullUp) {
         pinMode(_pin, INPUT_PULLUP);
     } else {
@@ -96,14 +93,12 @@ void myPushButton::init2()
     delayMicroseconds(5);
 }
 
-bool myPushButton::isPressed() 
-{
+bool myPushButton::isPressed() {
     init2();
     return digitalRead(_pin) != _lowState;
 }
 
-bool myPushButton::isHeldForLongEnough() 
-{
+bool myPushButton::isHeldForLongEnough() {
     return long(_heldBeginMillis + _heldDurationMillis) <= millis();
 }
 

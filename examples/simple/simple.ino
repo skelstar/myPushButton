@@ -3,7 +3,7 @@
 
 void listener_Button(int eventCode, int eventParam);
 
-myPushButton button(5, true, 2000, 1, listener_Button);
+myPushButton button(14, true, 1000, 1, listener_Button);
 
 void listener_Button(int eventCode, int eventParam) {
     
@@ -32,4 +32,6 @@ void setup() {
 
 void loop() {
 	button.serviceEvents();
+    Serial.println(button.isPressed());
+    delay(200);
 }

@@ -20,12 +20,11 @@ class myPushButton
         };
 
         typedef void ( *EventListener )( int eventCode, int eventParam );
+        typedef void ( *ButtonListener )( int state, int eventParam );
         myPushButton(uint8_t pin, bool pullUp, uint16_t heldDurationMs, uint8_t lowState, EventListener listenerCallback);
         bool isPressed();
         void serviceEvents();
-        bool singleButtonPush();
-        bool isHeld();
-        bool isReleased();
+
     private:
         EventManager evM;
         uint8_t _pin;
