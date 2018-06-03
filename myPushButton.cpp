@@ -46,7 +46,7 @@ void myPushButton::serviceEvents() {
 			//Serial.println("*** EV_BUTTON_PRESSED");
 			_heldBeginMillis = millis();
 			_heldSecondsCounter = 0;
-			_listenerCallback(_pin, EV_BUTTON_PRESSED);
+			_listenerCallback(EV_BUTTON_PRESSED, _pin, 0);
 			_state = ST_WAIT_FOR_RELEASE;
 			break;
 
@@ -59,19 +59,20 @@ void myPushButton::serviceEvents() {
 				if ((_heldSecondsCounter+1)*1000 < heldDownDuration) {
 					_heldSecondsCounter++;
 					//Serial.print("EV_HELD_SECONDS_"); Serial.println(_heldSecondsCounter);
-					_listenerCallback(_heldSecondsCounter, EV_HELD_SECONDS);
+					_listenerCallback(EV_HELD_SECONDS, _pin, _heldSecondsCounter);
 				}
     		}
     		break;
 
 		case EV_RELEASED :
 			//Serial.println("EV_RELEASED");
-			_listenerCallback(_pin, EV_RELEASED);
+			_listenerCallback(EV_RELEASED, _pin, _heldSecondsCounter);
 	        if (buttonReleaseInDoubletapWindow()) {
 				//Serial.println("*** EV_DOUBLETAP");
-	            _listenerCallback(_pin, EV_DOUBLETAP);
+				_listenerCallback(EV_DOUBLETAP, _pin, _heldSecondsCounter);
 				lastButtonReleaseTime = 0;
-	        } else {
+	        } 
+	        else {
 	            lastButtonReleaseTime = millis();
 	        }
 			_state = ST_NOT_HELD;
@@ -82,6 +83,7 @@ void myPushButton::serviceEvents() {
 void myPushButton::init() {
     if (_pullUp) {
         pinMode(_pin, INPUT_PULLUP);
+        // digitalWrite(_pin, HIGH);
     } else {
         pinMode(_pin, INPUT);
     }

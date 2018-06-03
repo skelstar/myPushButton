@@ -6,16 +6,16 @@
 class myPushButton 
 {
     public:
-        enum StateCode {
+		enum StateCode {
 			ST_NOT_HELD,
 			EV_BUTTON_PRESSED,
 			ST_WAIT_FOR_RELEASE,
 			EV_RELEASED,
 			EV_HELD_SECONDS,
 			EV_DOUBLETAP
-        };
+		};
 
-        typedef void ( *EventListener )( int eventCode, int eventParam );
+		typedef void ( *EventListener )( int eventCode, int eventPin, int eventParam );
 
         myPushButton(uint8_t pin, bool pullUp, uint8_t offState, EventListener listenerCallback);
         bool isPressed();
