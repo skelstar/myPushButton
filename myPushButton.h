@@ -23,6 +23,7 @@ class myPushButton
         myPushButton(uint8_t pin, bool pullUp, uint8_t offState, EventListener listenerCallback);
         bool isPressed();
         void serviceEvents();
+        bool pressedForNumMs(int numMillis);
 
     private:
         uint8_t _pin;

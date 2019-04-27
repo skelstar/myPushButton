@@ -101,6 +101,7 @@ void myPushButton::serviceEvents() {
 	        else {
 	            lastButtonReleaseTime = millis();
 	        }
+	        _heldBeginMillis = millis();
 
 			_specificTimeReached = false;
 			_state = ST_NOT_HELD;
@@ -122,6 +123,11 @@ void myPushButton::init() {
 bool myPushButton::isPressed() {
     init();
     return digitalRead(_pin) != _offState;
+}
+
+bool myPushButton::pressedForNumMs(int numMillis) {
+	long heldDownDuration = millis() - _heldBeginMillis;
+	return heldDownDuration >= numMillis && isPressed() == true;
 }
 
 bool buttonReleaseInDoubletapWindow() {
